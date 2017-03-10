@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{8FF1C9F3-9EEF-44DF-8D7C-B56D87E89752}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FCF3781C-0749-43CF-A922-1080B6B6BA0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7D6B91BC-6E65-45E6-BF3B-8A1CDD3FAEBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipServices.Quotes.Client", "src\PipServices.Quotes.Client\PipServices.Quotes.Client.csproj", "{3D73CACB-D1BE-41AF-B504-6E6A11922A5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipServices.Quotes.Client.Test", "test\PipServices.Quotes.Client.Test\PipServices.Quotes.Client.Test.csproj", "{8DD8EA52-795F-4E98-965C-F768ACC4A4AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipServices.Quotes.Client.Sample", "examples\PipServices.Quotes.Client.Sample\PipServices.Quotes.Client.Sample.csproj", "{8D273F80-9777-4EB4-8CBC-F5DAC5532377}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D73CACB-D1BE-41AF-B504-6E6A11922A5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D73CACB-D1BE-41AF-B504-6E6A11922A5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D73CACB-D1BE-41AF-B504-6E6A11922A5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D73CACB-D1BE-41AF-B504-6E6A11922A5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DD8EA52-795F-4E98-965C-F768ACC4A4AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DD8EA52-795F-4E98-965C-F768ACC4A4AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DD8EA52-795F-4E98-965C-F768ACC4A4AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DD8EA52-795F-4E98-965C-F768ACC4A4AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D273F80-9777-4EB4-8CBC-F5DAC5532377}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D273F80-9777-4EB4-8CBC-F5DAC5532377}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D273F80-9777-4EB4-8CBC-F5DAC5532377}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D273F80-9777-4EB4-8CBC-F5DAC5532377}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3D73CACB-D1BE-41AF-B504-6E6A11922A5F} = {FCF3781C-0749-43CF-A922-1080B6B6BA0C}
+		{8DD8EA52-795F-4E98-965C-F768ACC4A4AD} = {7D6B91BC-6E65-45E6-BF3B-8A1CDD3FAEBA}
+		{8D273F80-9777-4EB4-8CBC-F5DAC5532377} = {8FF1C9F3-9EEF-44DF-8D7C-B56D87E89752}
+	EndGlobalSection
+EndGlobal
