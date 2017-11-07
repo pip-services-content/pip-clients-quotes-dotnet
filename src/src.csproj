@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>PipServices.Quotes.Client</AssemblyName>
+    <RootNamespace>PipServices.Quotes.Client</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PipServices.Commons" Version="2.2.1" />
+    <PackageReference Include="PipServices.Net" Version="2.1.0" />
+  </ItemGroup>
+
+</Project>
