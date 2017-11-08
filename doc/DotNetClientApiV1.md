@@ -6,111 +6,91 @@ and provides high-level API to access the microservice for simple and productive
 
 * [Installation](#install)
 * [Getting started](#get_started)
-* [MultiString class](#class1)
-* [Quote class](#class2)
-* [QuotePage class](#class3)
-* [IQuoteClient interface](#interface)
-    - [Init()](#operation1)
-    - [Open()](#operation2)
-    - [Close()](#operation3)
-    - [GetQuotes()](#operation4)
-    - [GetRandomQuote()](#operation5)
-    - [GetQuoteById()](#operation6)
-    - [CreateQuote()](#operation7)
-    - [UpdateQuote()](#operation8)
-    - [DeleteQuote()](#operation9)
-* [QuotesRestClient class](#client_rest)
+* [Quote class](#class)
+* [IQuoteClientV1 interface](#interface)
+    - [GetQuotesAsync()](#operation1)
+    - [GetRandomQuoteAsync()](#operation2)
+    - [GetQuoteByIdAsync()](#operation3)
+    - [CreateQuoteAsync()](#operation4)
+    - [UpdateQuoteAsync()](#operation5)
+    - [DeleteQuoteAsync()](#operation6)
+* [QuotesHttpClientV1 class](#CommandableHttpClient)
 
 ## <a name="install"></a> Installation
 
-To work with the client SDK add references to PipServices.Runtime.dll and PipServices.Quotes.Client.dll
+To work with the client SDK add references to PipServices.Commons, PipServices.Net and PipServices.Quotes.Client
 
 If you don't have them readily available then download and build them from sourcecode
-- Pip.Services .NET Runtime: https://github.com/pip-services/pip-services-runtime-dotnet
-- This .NET Client SDK for Quotes microservices: https://github.com/pip-services/pip-clients-quotes-dotnet 
+- Pip.Services.Commons : https://github.com/pip-services/pip-services-commons-dotnet
+- Pip.Services.Net : https://github.com/pip-services/pip-services-net-dotnet
+- This .NET Client SDK for Quotes microservices: https://github.com/pip-services-content/pip-clients-quotes-dotnet 
 
 ## <a name="get_started"></a> Getting started
 
-This is a simple example on how to work with the microservice using REST client:
+This is a simple example on how to work with the microservice using HTTP client:
 
 ```cs
+using PipServices.Commons.Config;
+using PipServices.Commons.Data;
 using PipServices.Quotes.Client.Version1;
-using PipServices.Runtime;
+
 using System;
 
-class Program
+namespace PipServices.Quotes.Client.Run
 {
-    static void Main(string[] args)
+    class Program
     {
-        // Client configuration
-        var config = new DynamicMap(
-             "transport.type", "http",
-             "transport.host", "localhost", 
-             "transport.port", 8002
-        };
-  
-        // Create the client instance
-        var client = QuotesRestClient(config);
-        
-        try
+        static void Main(string[] args)
         {
-             // Open client connection to the microservice
-             client.Open();             
-             Console.Out.WriteLine("Opened connection");
 
-             // Create a new quote
-             var quote = new Quote {
-                Text = new MiltiString { En = "Get in hurry slowly" },
-                Author = new MultiString { En = "Russian proverb" },
-                Tags = string[] { "time management" },
-                Status = "completed"
-            };
+            try
+            {
+                var correlationId = "123";
+                var config = ConfigParams.FromTuples(
+                    "connection.type", "http",
+                    "connection.host", "localhost",
+                    "connection.port", 8080
+                );
+                var filterParams = FilterParams.FromTuples(
+                    "status", "completed",
+                    "search", "goal");
 
-            quote = client.CreateQuote(quote);
-            Console.Out.WriteLine("Create quote is");
-            Console.Out.WriteLine(quote);
+                var client = new QuotesHttpClientV1();
+                client.Configure(config);
+                client.OpenAsync(correlationId);
 
-            // Get the list of quotes on 'time management' topic
-            var quotesPage = client.GetQuotes(
-                new FilterParams(
-                    "tags", "time management",
-                    "status", "completed"
-                ),
-                new PagingParams(
-                    paging: true,
-                    skip: 0,
-                    take: 10
-                )
-            );
+                var quote = client.GetRandomQuoteAsync(correlationId, filterParams).Result;
 
-            Console.Out.WriteLine("Quotes on time management are");
-            Console.Out.WriteLine(quotesPage.Data);
-            
-            // Close connection
-            client.Close(); 
+                if (quote != null)
+                {
+                    Console.WriteLine("'{0}' by {1}", ToEnglish(quote.Text), ToEnglish(quote.Author));
+                }
+                else
+                {
+                    Console.WriteLine("No quote was returned. Come up with your own...");
+                }
+
+                Console.WriteLine("Press ENTER to exit...");
+                Console.ReadLine();
+
+                client.CloseAsync(string.Empty);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
-        catch (Exception ex) 
+
+        private static string ToEnglish(MultiString value)
         {
-            Console.Error.WriteLine(ex);
+            return value.ContainsKey("en") ? value["en"].ToString() : "<No Value>";
         }
+
     }
 }
 ```
 
-### <a name="class1"></a> MultiString class
-
-String that contains versions in multiple languages
-
-**Properties:**
-- En: string - English version of the string
-- Sp: string - Spanish version of the string
-- De: string - German version of the string
-- Fr: string - Franch version of the string
-- Pt: string - Portuguese version of the string
-- Ru: string - Russian version of the string
-- .. - other languages can be added here
-
-### <a name="class2"></a> Quote class
+### <a name="class"></a> Quote class
 
 Represents an inspirational quote
 
@@ -120,57 +100,30 @@ Represents an inspirational quote
 - Author: MultiString - name of the quote author in different languages
 - Status: string - editing status of the quote: 'new', 'writing', 'translating', 'completed' (default: 'new')
 - Tags: string[] - (optional) search tags that represent topics associated with the quote
-- AllTags: string[] - (read only) explicit and hash tags in normalized format for searching  
+- All_Tags: string[] - (read only) explicit and hash tags in normalized format for searching  
 
-### <a name="class3"></a> QuotePage class
+## <a name="interface"></a> IQuotesClientV1 interface
 
-Represents a paged result with subset of requested quotes
-
-**Properties:**
-- Data: Quote[] - array of retrieved Quote page
-- Total: int? - total number of objects in retrieved resultset
-
-## <a name="interface"></a> IQuotesClient interface
-
-IQuotesClient as a common interface across all client implementations. 
+IQuotesClientV1 as a common interface across all client implementations. 
 
 ```cs
-public interface IQuotesClient {
-    public void Init(References refs);
-    public void Open();
-    public void Close();
-    public DataPage<Quote> GetQuotes(FilterParams filter, PagingParams paging);
-    public Quote GetRandomQuote(FilterParams filter);
-    public Quote GetQuoteById(string quoteId);
-    public Quote CreateQuote(Quote quote);
-    public Quote UpdateQuote(string quoteId, Quote quote);
-    public void DeleteQuote(string quoteId);
+public interface IQuotesClientV1
+{
+	Task<DataPage<QuoteV1>> GetQuotesAsync(string correlationId, FilterParams filter, PagingParams paging);
+	Task<QuoteV1> GetRandomQuoteAsync(string correlationId, FilterParams filter);
+	Task<QuoteV1> GetQuoteByIdAsync(string correlationId, string quoteId);
+	Task<QuoteV1> CreateQuoteAsync(string correlationId, QuoteV1 quote);
+	Task<QuoteV1> UpdateQuoteAsync(string correlationId, QuoteV1 quote);
+	Task<QuoteV1> DeleteQuoteByIdAsync(string correlationId, string quoteId);
 }
 ```
 
-### <a name="operation1"></a> Init(refs)
-
-Initializes client references. This method is optional. It is used to set references 
-to logger or performance counters.
-
-**Arguments:**
-- refs: References - references to other components 
-  - log: ILog - reference to logger
-  - countes: ICounters - reference to performance counters
-
-### <a name="operation2"></a> Open()
-
-Opens connection to the microservice
-
-### <a name="operation3"></a> Close()
-
-Closes connection to the microservice
-
-### <a name="operation4"></a> GetQuotes(filter, paging)
+### <a name="operation1"></a> GetQuotesAsync(correlationId, filter, paging)
 
 Retrieves a collection of quotes according to specified criteria
 
 **Arguments:** 
+- correlationId: correlation id
 - filter: any - filter parameters
   - tags: string[] - (optional) list tags with topic names
   - status: string - (optional) quote editing status
@@ -182,13 +135,14 @@ Retrieves a collection of quotes according to specified criteria
   - paging: bool - (optional) true to enable paging and return total count
 
 **Returns**
-  - DataPage<Quote> - retrieved quotes in paged format
+  - DataPage<QuoteV1> - retrieved quotes in paged format
 
-### <a name="operation5"></a> GetRandomQuote(filter)
+### <a name="operation2"></a> GetRandomQuoteAsync(correlationId, filter)
 
 Retrieves a random quote from filtered resultset
 
 **Arguments:** 
+- correlationId: correlation id
 - filter: any - filter parameters
   - tags: string[] - (optional) list tags with topic names
   - status: string - (optional) quote editing status
@@ -198,65 +152,61 @@ Retrieves a random quote from filtered resultset
 **Returns** 
 - Quote - random quote, null if object wasn't found 
 
-### <a name="operation6"></a> GetQuoteById(quoteId)
+### <a name="operation3"></a> GetQuoteByIdAsync(correlationId, quoteId)
 
 Retrieves a single quote specified by its unique id
 
 **Arguments:** 
+- correlationId: correlation id
 - quoteId: string - unique Quote id
 
 **Returns**
 - Quote - retrieved quote, null if object wasn't found 
 
-### <a name="operation7"></a> CreateQuote(quote)
+### <a name="operation4"></a> CreateQuoteAsync(correlationId, quote)
 
 Creates a new quote
 
 **Arguments:** 
+- correlationId: correlation id
 - quote: Quote - Quote object to be created. If object id is not defined it is assigned automatically.
 
 **Returns**
 - Quote - created quote object
 
-### <a name="operation8"></a> UpdateQuote(quoteId, quote)
+### <a name="operation5"></a> UpdateQuoteAsync(correlationId, quoteId, quote)
 
 Updates quote specified by its unique id
 
 **Arguments:** 
+- correlationId: correlation id
 - quoteId: string - unique quote id
 - quote: Quote - quote object with new values. Partial updates are supported
 
 **Returns**
 - Quote - updated quote object 
 
-### <a name="operation9"></a> DeleteQuote(quoteId)
+### <a name="operation6"></a> DeleteQuoteAsync(correlationId, quoteId)
 
 Deletes quote specified by its unique id
 
 **Arguments:** 
+- correlationId: correlation id
 - quoteId: string - unique quote id
  
-## <a name="client_rest"></a> QuotesRestClient class
+## <a name="CommandableHttpClient"></a> QuotesHttpClientV1 class
 
-QuotesRestClient is a client that implements HTTP/REST protocol
+QuotesHttpClientV1 is a client that implements commandable HTTP/REST protocol
 
 ```cs
-public class QuotesRestClient: RestClient, IQuotesClient {
-    public QuotesRestClient(DynamicMap config);
-    public void Init(References refs);
-    public void Open();
-    public void Close();
-    public DataPage<Quote> GetQuotes(FilterParams filter, PagingParams paging);
-    public Quote GetRandomQuote(FilterParams filter);
-    public Quote GetQuoteById(string quoteId);
-    public Quote CreateQuote(Quote quote);
-    public Quote UpdateQuote(string quoteId, Quote quote);
-    public void DeleteQuote(string quoteId);
+public class QuotesHttpClientV1 : CommandableHttpClient, IQuotesClientV1
+{
+	public QuotesHttpClientV1();
+	public Task<DataPage<QuoteV1>> GetQuotesAsync(string correlationId, FilterParams filter, PagingParams paging);
+	public Task<QuoteV1> GetRandomQuoteAsync(string correlationId, FilterParams filter);
+	public Task<QuoteV1> GetQuoteByIdAsync(string correlationId, string quoteId);
+	public Task<QuoteV1> CreateQuoteAsync(string correlationId, QuoteV1 quote);
+	public Task<QuoteV1> UpdateQuoteAsync(string correlationId, QuoteV1 quote);
+	public Task<QuoteV1> DeleteQuoteByIdAsync(string correlationId, string quoteId);
 }
 ```
-
-**Constructor config properties:** 
-- transport: object - HTTP transport configuration options
-  - type: string - HTTP protocol - 'http' or 'https' (default is 'http')
-  - host: string - IP address/hostname binding (default is '0.0.0.0')
-  - port: int - HTTP port number

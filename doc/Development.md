@@ -24,20 +24,21 @@ git clone git@github.com:pip-services/pip-clients-quotes-dotnet.git
 
 ## <a name="build"></a> Building
 
-Make sure you satisfy dependency to PipServices.Runtime.dll. If you don't have it readily available
-you can download and rebuild it from sourcecode from https://github.com/pip-services/pip-services-runtime-dotnet
+Make sure you satisfy dependency to PipServices.Commons and PipServices.Net. If you don't have it readily available
+you can download and rebuild it from sourcecode from https://github.com/pip-services/pip-services-commons-dotnet and 
+https://github.com/pip-services/pip-services-net-dotnet
 
 Then open the solution in Visual Studio and execute **Rebuild All** command. 
 
 ## <a name="test"></a> Testing
 
-Unit testing in the .NET client SDK doesn't run microservice and relies on external Node.js microservice instance.
-So, follow instructions to install and run the microservice at https://github.com/pip-services/pip-services-quotes
+Unit testing in the .NET client SDK doesn't run microservice and relies on external .NET microservice instance.
+So, follow instructions to install and run the microservice at https://github.com/pip-services-content/pip-services-quotes-dotnet
 
-Make sure you enable REST API endpoint in the microservice. The default microservice HTTP REST port is 8002.
+Make sure you enable REST API endpoint in the microservice. The default microservice HTTP REST port is 8080.
 Then check rest configuration in unit tests to match the microservice port. 
 
-When Node.js microservices is up and running you can execute **All Tests** command in Visual Studio to run the tests.
+When .NET microservice is up and running you can execute **All Tests** command in Visual Studio to run the tests.
 
 ## <a name="contrib"></a> Contributing
 
