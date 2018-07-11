@@ -22,8 +22,19 @@ namespace PipServices.Quotes.Client.Test
 
         public QuotesHttpClientTest()
         {
+            var quotesProtocol = Environment.GetEnvironmentVariable("QUOTES_SERVICE_PROTOCOL") ?? "http";
+            var quotesHost = Environment.GetEnvironmentVariable("QUOTES_SERVICE_HOST") ?? "localhost";
+            var quotesPort = Environment.GetEnvironmentVariable("QUOTES_SERVICE_PORT") ?? "8080";
+
+            ConfigParams EnvRestConfig = ConfigParams.FromTuples(
+                "connection.protocol", quotesProtocol,
+                "connection.host", quotesHost,
+                "connection.port", quotesPort
+            );
+
             _client = new QuotesHttpClientV1();
-            _client.Configure(RestConfig);
+            // _client.Configure(RestConfig);
+            _client.Configure(EnvRestConfig);
 
             _fixture = new QuotesClientFixture(_client);
 

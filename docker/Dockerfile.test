@@ -1,0 +1,21 @@
+# Build stage
+FROM microsoft/aspnetcore-build:2 AS build
+
+# Set working directory
+WORKDIR /app
+
+# Restore
+COPY src/src.csproj ./src/
+RUN dotnet restore src/src.csproj
+COPY run/run.csproj ./run/
+RUN dotnet restore run/run.csproj
+COPY test/test.csproj ./test/
+RUN dotnet restore test/test.csproj
+
+# Copy src
+COPY . .
+
+# Test
+ENV TEAMCITY_PROJECT_NAME=fake
+
+# Run statement is in the docker-compose.test.yml file

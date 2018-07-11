@@ -1,0 +1,19 @@
+version: '3.3'
+
+services:
+  app:
+    image: ${IMAGE}
+    depends_on:
+      - quotes
+    environment:
+      - QUOTES_SERVICE_PROTOCOL=http
+      - QUOTES_SERVICE_HOST=quotes
+      - QUOTES_SERVICE_PORT=8080
+    command: ${RUN_CMD:-bash -c "dotnet ./bin/run.dll"}
+
+  quotes:
+    ### For usage with quotes .net Core microservice
+    image: pipdevs/pip-services-quotes-dotnet:latest
+
+    ### For usage with quotes node.js microservice 
+    # image: pipdevs/pip-services-quotes-node:latest

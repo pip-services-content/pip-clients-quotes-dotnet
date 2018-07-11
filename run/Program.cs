@@ -13,11 +13,15 @@ namespace PipServices.Quotes.Client.Run
 
             try
             {
+                var quotesProtocol = Environment.GetEnvironmentVariable("QUOTES_SERVICE_PROTOCOL") ?? "http";
+                var quotesHost = Environment.GetEnvironmentVariable("QUOTES_SERVICE_HOST") ?? "localhost";
+                var quotesPort = Environment.GetEnvironmentVariable("QUOTES_SERVICE_PORT") ?? "8080";
+
                 var correlationId = "123";
                 var config = ConfigParams.FromTuples(
-                    "connection.type", "http",
-                    "connection.host", "localhost",
-                    "connection.port", 8080
+                    "connection.protocol", quotesProtocol,
+                    "connection.host", quotesHost,
+                    "connection.port", quotesPort
                 );
                 var filterParams = FilterParams.FromTuples(
                     "status", "completed",

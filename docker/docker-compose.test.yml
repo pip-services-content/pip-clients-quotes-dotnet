@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.test
+    image: ${IMAGE:-test}
+    command: ${TEST_CMD:-bash -c "dotnet test test/test.csproj"}
+    depends_on:
+      - quotes
+    environment:
+      - QUOTES_SERVICE_PROTOCOL=http
+      - QUOTES_SERVICE_HOST=quotes
+      - QUOTES_SERVICE_PORT=8080
+
+  quotes:
+    ### For usage with .net Core quotes microservice
+    image: pipdevs/pip-services-quotes-dotnet:latest
+
+    ### For usage with node.js quotes microservice 
+    # image: pipdevs/pip-services-quotes-node:latest
+
